@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="mdui-theme-layout-auto mdui-theme-primary-cyan mdui-theme-accent-pink mdui-appbar-with-toolbar">
+	<head>
+		<meta charset="utf-8">
+		<title>GETFILE</title>
+		<link rel="stylesheet" href="./static/css/mdui.min.css"/>
+		<script src="/static/js/mdui.min.js"></script>
+		<meta name="viewport" content="width=device-width" />
+		<script>
+			function _post(data) {
+				var xhr = new XMLHttpRequest();
+				xhr.open('POST', `/create`, false);
+				xhr.setRequestHeader("Content-type", "application/json");
+				xhr.send(JSON.stringify({url: data}));
+				if (xhr.status == 200) {
+					var obj = {};
+					try {
+						obj = JSON.parse(xhr.responseText);
+					}
+					catch (e) {
+						return {s: "e", m: "Client Error"};
+					}
+					if (!obj.s || !obj.m) {
+						return {s: "e", m: "Client Error"};
+					}
+					return obj;
+				}
+				return "error";
+			};
+
+			function create() {
+				var res = _post(document.getElementById("in").value);
+				var o = document.createElement("a");
+				o.innerHTML = res.m;
+				if (res.s == "e") {
+					o.style = "color: #ff0000;";
+				}
+				document.getElementById("log").appendChild(o);
+			}
+
+			function open() {
+				window.open("/static/" + document.getElementById("in").value, "_blank");
+			}
+		</script>
+	</head>
+	<body class="mdui-loaded">
+		<div class="mdui-textfield">
+			<label class="mdui-textfield-label" for="in">Data</label>
+			<input class="mdui-textfield-input" type="text" name="in" id="in"/>
+		</div>
+		<a class="mdui-btn mdui-btn-raised mdui-ripple mdui-ripple-white mdui-color-theme" href="javascript:create();">Create</a>
+		<a class="mdui-btn mdui-btn-raised mdui-ripple mdui-ripple-white mdui-color-theme" href="javascript:open();">Open</a>
+		<div class="mdui-typo" id="logs"></div>
+	</body>
+</html>
